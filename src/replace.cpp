@@ -25,10 +25,12 @@ void help(string prog_name);
 
 int main(int argc, char *argv[]) {
    string file_regex, match_regex, replacement;
-   string dir_path = ".";
-   string prog_name = string(argv[0]);
-   bool   all = false;
-   bool   recursive = false;
+   string dir_path     = ".";
+   string prog_name    = string(argv[0]);
+   bool all            = false;
+   bool recursive      = false;
+   bool quiet          = false;
+   long total_replaced = 0;
 
    replace_first(prog_name, "^.*/", "");
 
@@ -51,6 +53,7 @@ int main(int argc, char *argv[]) {
             switch (argv[i][opt_cnt]) {
                case 'a': all       = true; break;
                case 'r': recursive = true; break;
+               case 'q': quiet     = true; break;
             }
             opt_cnt++;
          }
@@ -69,10 +72,6 @@ int main(int argc, char *argv[]) {
    file_regex  = string(argv[argc - 3]);
    match_regex = string(argv[argc - 2]);
    replacement = string(argv[argc - 1]);
-
-   cout << "got here 1!\nall: " << all << " recursive: " << recursive;
-   cout << "\nfile_regex: " << file_regex << " match_regex: " << match_regex;
-   cout << " replacement: " << replacement << "\n";
 
    // get dir_path
    // dir_path is the directory of the file which matches file_regex. If
@@ -94,8 +93,10 @@ int main(int argc, char *argv[]) {
       file_regex = m[2];
    }
 
-   cout << "\ngot here 2! ";
-   cout << "dir_path: " << dir_path << " file_regex: " << file_regex << "\n";
+   if (!quiet) {
+      cout << "\n" << prog_name << ": searching directory: " << dir_path;
+      cout << " for file_regex: " << file_regex << "\n\n";
+   }
 
    vector<string> files;
    if (recursive) {
@@ -113,6 +114,8 @@ int main(int argc, char *argv[]) {
       }
    }
 
+   // TODO: ignore binary files
+   //
    // loop through files removing directories and prefixing dir_path to file
    // names in files.
    vector<string> new_files;
@@ -121,18 +124,18 @@ int main(int argc, char *argv[]) {
          new_files.push_back(dir_path + files[i]);
    files = new_files;
 
-   cout << "finished files list:\n";
-   for (size_t i = 0; i < new_files.size(); ++i)
-      cout << new_files[i] << "\n";
-   cout << "\n";
+   if (!quiet) {
+      cout << "                   file name";
+      cout << "                          lines replaced\n";
+   }
 
    // loop through files finding match_regex matches and replacing them with
    // replacement on each line of each file.
    for (size_t i = 0; i < files.size(); ++i) {
       vector<string> contents; // used to store replacement contents of files
 
-      // open the file for reading
-      cout << "replace: opening file `" << files[i] << "` for reading.\n";
+      //if (!quiet)
+      //   cout << "replace: opening file `" << files[i] << "` for reading.\n";
       ifstream ifh;
       ifh.open(files[i].c_str());
       if (!ifh.is_open()) {
@@ -140,7 +143,8 @@ int main(int argc, char *argv[]) {
          return 1;
       }
 
-      // replace all or first of the matches on each line
+      // replace all of the matches on each line or replace the first match in
+      // the file
       long replaced = 0;
       while (ifh.peek() != EOF) {   
          string line;
@@ -159,14 +163,17 @@ int main(int argc, char *argv[]) {
       }
       ifh.close();
 
-cout << "replaced: " << replaced << "\n";
+      if (!quiet) {
+         cout << left << setw(60) << files[i];
+         cout << " " << replaced << "\n";
+      }
 
       // skip writing over files[i] if there are no changes
       if (replaced == 0)
          continue;
 
-      // open the file for writing
-      cout << "replace: opening file `" << files[i] << "` for writing.\n";
+      //if (!quiet)
+      //   cout << "replace: opening file `" << files[i] << "_tmp` for writing.\n";
       ofstream ofh;
       string tmpfilename = files[i];
       tmpfilename += "_tmp";
@@ -181,8 +188,13 @@ cout << "replaced: " << replaced << "\n";
          ofh.write(contents[i].c_str(), contents[i].size());
       }
       ofh.close();
-
+      total_replaced += replaced;
    } // end of files loop
+
+   if (!quiet) {
+      cout << "\n" << prog_name << ": total lines replaced: ";
+      cout << total_replaced << "\n\n";
+   }
    return 0;
 }
 
