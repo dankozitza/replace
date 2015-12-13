@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
       ifstream ifh;
       ifh.open(files[i].c_str());
       if (!ifh.is_open()) {
-         cerr << "replace: Error! Could not open `" << files[i];
+         cerr << prog_name << ": Error! Could not open `" << files[i];
          cerr << "` for reading.\n\n";
          return 1;
       }
@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
       ofstream ofh;
       ofh.open(files[i].c_str());
       if (!ofh.is_open()) {
-         cerr << "replace: Error! Could not open `" << files[i];
+         cerr << prog_name << ": Error! Could not open `" << files[i];
          cerr << "` for writing.\n\n";
          return 1;
       }
@@ -214,7 +214,8 @@ void help(string p_name) {
    cout << "\n" << p_name;
    cout << " is a tool for replacing strings with other strings";
    cout << " in one or more files.\n\n";
-   cout << "Usage:\n\n   replace [-art] file_regex match_regex replacement\n\n";
+   cout << "Usage:\n\n   " << p_name;
+   cout << " [-art] file_regex match_regex replacement\n\n";
 
    // for the file_regex argument, forwardslashes are used to represent a
    // directory path preceding the regular expression. They can be escaped with
