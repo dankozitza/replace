@@ -54,10 +54,16 @@ namespace tools {
    // pcre2.cpp
    bool pmatches(string s, string str_re);
    bool pmatches(string results[], string s, string str_re);
+   bool pmatches(vector<string> &results, string s, string str_re);
    bool pmatches(string results[], string s, string str_re, bool get_res);
+   bool pmatches(
+         vector<string> &results,
+         string s,
+         string str_re,
+         bool get_res);
    void test_pmatches();
    bool replace_first(string &s, string str_re, string rpl);
-   bool replace_all(string &s, string str_re, string rpl);
+   size_t replace_all(string &s, string str_re, string rpl);
 
 
    // vectors.cpp

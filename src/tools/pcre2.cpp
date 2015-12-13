@@ -18,7 +18,27 @@ bool tools::pmatches(string results[], string s, string str_re) {
    return pmatches(results, s, str_re, true);
 }
 
+bool tools::pmatches(vector<string> &results, string s, string str_re) {
+   return pmatches(results, s, str_re, true);
+}
+
 bool tools::pmatches(string results[], string s, string str_re, bool get_res) {
+   vector<string> m;
+   if (!pmatches(m, s, str_re, get_res))
+      return false;
+
+   for (size_t i = 0; i < m.size(); ++i)
+      results[i] = m[i];
+   return true;
+}
+
+bool tools::pmatches(
+      vector<string> &results,
+      string s,
+      string str_re,
+      bool get_res) {
+
+   results.clear();
    pcre2_code *re;
 
    // PCRE2_SPTR is a pointer to unsigned code units of
@@ -92,7 +112,7 @@ bool tools::pmatches(string results[], string s, string str_re, bool get_res) {
       assert(rc != 0);
 
       for (int i = 0; i < rc; ++i) {
-         results[i] = "";
+         results.push_back("");
          PCRE2_SPTR substring_start = subject + ovector[2*i];
          size_t substring_length = ovector[2*i+1] - ovector[2*i];
          for (int j = 0; j < substring_length; ++j)
@@ -130,10 +150,87 @@ void tools::test_pmatches() {
       cout << "test failed!, match 2 [" << am[2] << "] did not match!\n";
 }
 
+struct ResultParts {
+   string part;
+   size_t m_index;
+};
+
 bool tools::replace_first(string &s, string str_re, string rpl) {
-   return true;
+   return false;
 }
 
-bool tools::replace_all(string &s, string str_re, string rpl) {
-   return true;
+// rpl may contain the special variables #1, #2, #3, etc. which will be
+// set to the groups in the str_re in their respective order.
+// digits in rpl can be escaped to allow for rpl strings like '$1\23'
+// this will result in '1_contents23'
+size_t tools::replace_all(string &s, string str_re, string rpl) {
+   vector<string> m;
+   vector<ResultParts> result_parts;
+   string scratch = rpl;
+   size_t count = 0;
+
+   while(tools::pmatches(m, scratch, "^(.*)\\\\#(.*)$")) {
+      scratch = m[1] + "ph" + m[2];
+   }
+
+   size_t rpl_i = 0;
+   for (long i = 0; i < scratch.size(); ++i) {
+      if (scratch[i] == '#') {
+         ResultParts rp;
+         if (i > 0)
+            rp.part = rpl.substr(rpl_i, i);
+         else
+            rp.part = "";
+
+         rp.m_index = 0;
+         i++;
+         while (scratch[i] >= '0' && scratch[i] <= '9') {
+            rp.m_index = rp.m_index * 10 + scratch[i] - '0';
+            i++;
+         }
+
+         result_parts.push_back(rp);
+         scratch = scratch.substr(i);
+         rpl_i += i;
+         i = -1;
+      }
+   }
+   ResultParts last_rp;
+   last_rp.part = rpl.substr(rpl_i);
+   last_rp.m_index = 0;
+   result_parts.push_back(last_rp);
+
+   // replace \# with # and \0 - \9 with 0 - 9
+   for (size_t i = 0; i < result_parts.size(); ++i) {
+      while (pmatches(m, result_parts[i].part, "^(.*)\\\\#(.*)$")) {
+         result_parts[i].part = m[1] + "#" + m[2];
+      }
+      while (pmatches(m, result_parts[i].part, "^(.*)\\\\(\\d)(.*)$")) {
+         result_parts[i].part = m[1] + m[2] + m[3];
+      }
+   }
+
+   size_t at_index = 0;
+   while (pmatches(m, s.substr(at_index), "^(.*?)" + str_re + "(.*)$")) {
+
+      s = s.substr(0, at_index) + m[1];
+      for (size_t i = 0; i < result_parts.size(); ++i) {
+
+         if (m.size() - 2 <= result_parts[i].m_index) {
+            cerr << "tools::replace_all: Number of variables in match regex: ";
+            cerr << "`" << str_re << "` does not match variable named in ";
+            cerr << "replacement string: `" << rpl << "`.\n";
+            exit(1);
+         }
+
+         s += result_parts[i].part;
+         if (result_parts[i].m_index > 0)
+            s += m[result_parts[i].m_index + 1];
+      }
+      at_index = s.size();
+      s += m[m.size() - 1];
+      count++;
+   }
+
+   return count;
 }

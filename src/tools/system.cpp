@@ -147,12 +147,19 @@ bool tools::list_dir_r(string dir_name, vector<string>& contents) {
    }
    return ret;
 }
+
+struct DirInfo {
+   string new_dir_name;
+   string entry_name;
+};
+
 bool tools::list_dir_r(
       string dir_name,
       vector<string>& contents,
       string prefix) {
    DIR *dir;
    struct dirent *ent;
+   vector<DirInfo> dir_info;
 
    // remove trailing / from dir_name
    if (dir_name.size() >= 3 && dir_name[dir_name.size() - 1] == '/')
@@ -160,7 +167,7 @@ bool tools::list_dir_r(
 
    if ((dir = opendir(dir_name.c_str())) != NULL) {
 
-      // add all the files and directories within directory to contents
+      // add all the files and directories within directory to dir_info
       while ((ent = readdir(dir)) != NULL) {
          string new_dir_name = ent->d_name;
          string entry_name;
@@ -177,17 +184,23 @@ bool tools::list_dir_r(
             else
                entry_name = prefix + "/" + entry_name;
          }
-
-         contents.push_back(entry_name);
-
          if (dir_name == "/")
             new_dir_name = dir_name + new_dir_name;
          else
             new_dir_name = dir_name + "/" + new_dir_name;
 
-         list_dir_r(new_dir_name, contents, entry_name);
+         DirInfo tmp;
+         tmp.new_dir_name = new_dir_name;
+         tmp.entry_name = entry_name;
+         dir_info.push_back(tmp);
       }
       closedir(dir);
+
+      // add all the files and directories within dir_info to contents
+      for (size_t i = 0; i < dir_info.size(); ++i) {
+         contents.push_back(dir_info[i].entry_name);
+         list_dir_r(dir_info[i].new_dir_name, contents, dir_info[i].entry_name);
+      }
       return true;
    }
    else {
