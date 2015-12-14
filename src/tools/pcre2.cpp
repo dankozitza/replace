@@ -174,25 +174,29 @@ size_t tools::replace_all(string &s, string str_re, string rpl) {
    }
 
    size_t rpl_i = 0;
-   for (long i = 0; i < scratch.size(); ++i) {
-      if (scratch[i] == '#') {
+   size_t scr_i = 0;
+   while (scr_i < scratch.size()) {
+      if (scratch[scr_i] == '#') {
          ResultParts rp;
-         if (i > 0)
-            rp.part = rpl.substr(rpl_i, i);
+         if (scr_i > 0)
+            rp.part = rpl.substr(rpl_i, scr_i);
          else
             rp.part = "";
 
          rp.m_index = 0;
-         i++;
-         while (scratch[i] >= '0' && scratch[i] <= '9') {
-            rp.m_index = rp.m_index * 10 + scratch[i] - '0';
-            i++;
+         scr_i++;
+         while (scratch[scr_i] >= '0' && scratch[scr_i] <= '9') {
+            rp.m_index = rp.m_index * 10 + scratch[scr_i] - '0';
+            scr_i++;
          }
 
          result_parts.push_back(rp);
-         scratch = scratch.substr(i);
-         rpl_i += i;
-         i = -1;
+         scratch = scratch.substr(scr_i);
+         rpl_i += scr_i;
+         scr_i = 0;
+      }
+      else {
+         scr_i++;
       }
    }
    ResultParts last_rp;

@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
       if (test)
          cout << prog_name << ": test mode: No files will be modified.\n";
       cout << prog_name << ": searching directory: " << dir_path;
-      cout << " for file_regex: " << file_regex << "\n";
+      cout << " for file_regex: " << file_regex << endl;
    }
 
    vector<string> files;
@@ -187,9 +187,9 @@ int main(int argc, char *argv[]) {
       ofstream ofh;
       ofh.open(files[i].c_str());
       if (!ofh.is_open()) {
-         cerr << prog_name << ": Error! Could not open `" << files[i];
+         cerr << prog_name << ": Could not open `" << files[i];
          cerr << "` for writing.\n\n";
-         return 1;
+         continue;
       }
       for (size_t i = 0; i < contents.size(); ++i) {
          contents[i] += "\n";
@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
    if (!quiet) {
       if (wrote_col_names) {
          cout << "\n" << prog_name << ": Total matches replaced: ";
-         cout << total_replaced << "\n\n";
+         cout << "                            " << total_replaced << "\n\n";
       }
       else {
          cout << prog_name << ": No files match!\n\n";
