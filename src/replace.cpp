@@ -236,14 +236,14 @@ void more_info() {
          7,
          80,
          "_regex  - A Perl regular expression to match a file in the current working directory. A directory path can be prepended to the regular expression. the / character is not allowed in the regular expression part.");
-   cout << "\n   ma";
+   cout << "\n\n   ma";
    cout << fold(
          7,
          80,
          "tch_regex - A Perl regular expression to be used for search and "
          "replace.");
 
-   cout << "\n   rep";
+   cout << "\n\n   rep";
    cout << fold(
          7,
          80,

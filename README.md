@@ -25,7 +25,9 @@ matching file_regex.
        working directory. A directory path can be prepended to the regular
        expression. the / character is not allowed in the regular expression
        part.
+
    match_regex - A Perl regular expression to be used for search and replace.
+
    replacement - A string that will replace whatever matches match_regex. This
        string can contain the special variables #1, #2, #3, etc. These contain
        the groups set in the match_regex string. ex match_regex "(.)"
