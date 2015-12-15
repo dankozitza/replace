@@ -19,6 +19,7 @@
 using namespace tools;
 
 void help(string prog_name);
+void more_info();
 
 int main(int argc, char *argv[]) {
    string file_regex, match_regex, replacement;
@@ -39,6 +40,8 @@ int main(int argc, char *argv[]) {
 
    if (argc < 4) {
       help(prog_name);
+      if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'h')
+         more_info();
       return 0;
    }
 
@@ -57,6 +60,7 @@ int main(int argc, char *argv[]) {
                case 't': test       = true; break;
             // case 'l': last_match = true; break;
             // case 'm': match_info = true; break;
+               case 'h': help(prog_name); more_info(); return 0;
             }
             opt_cnt++;
          }
@@ -211,11 +215,43 @@ int main(int argc, char *argv[]) {
 }
 
 void help(string p_name) {
-   cout << "\n" << p_name;
-   cout << " is a tool for replacing strings with other strings";
-   cout << " in one or more files.\n\n";
-   cout << "Usage:\n\n   " << p_name;
-   cout << " [-art] file_regex match_regex replacement\n\n";
+   cout << "\n";// << p_name;
+
+   cout << fold(0, 80, p_name +
+      " is a tool that performs search-and-replace using pcre2 on any file "
+      "names matching file_regex.");
+   cout << "\n\nUsage:\n\n   " << p_name;
+   cout << " [-option] file_regex match_regex replacement\n\n";
+   cout << "Options:\n\n";
+   cout << "   a - Replace all matches in the files that match file_regex.\n";
+   cout << "   r - Search recursively for files that match file_regex.\n";
+   cout << "   t - Test mode. No files will be modified.\n";
+   cout << "   h - Print more information.\n\n";
+}
+
+void more_info() {
+   cout << "Arguments:\n\n";
+   cout << "   file";
+   cout << fold(
+         7,
+         80,
+         "_regex  - A Perl regular expression to match a file in the current working directory. A directory path can be prepended to the regular expression. the / character is not allowed in the regular expression part.");
+   cout << "\n   ma";
+   cout << fold(
+         7,
+         80,
+         "tch_regex - A Perl regular expression to be used for search and "
+         "replace.");
+
+   cout << "\n   rep";
+   cout << fold(
+         7,
+         80,
+         "lacement - A string that will replace whatever matches match_regex. This string can contain the special variables #1, #2, #3, etc. These contain the groups set in the match_regex string. ex match_regex \"(.)\" replacement \"#1\" replaces each character in the file.");
+   cout << "\n\n";
+
+// replaces one or many strings that match a given regular expression in any
+// files that match the file regular expression.
 
    // for the file_regex argument, forwardslashes are used to represent a
    // directory path preceding the regular expression. They can be escaped with
