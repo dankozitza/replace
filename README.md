@@ -23,10 +23,9 @@ replace [-option] file_regex match_regex replacement
 ```text
    file_regex
 
-       A Perl regular expression to match a file in the current
-       working directory. A directory path can be prepended to the regular
-       expression. the / character is not allowed in the regular expression
-       part.
+       A Perl regular expression to match a file in the current working
+       directory. A directory path can be prepended to the regular expression.
+       The / character is not allowed in the regular expression part.
 
    match_regex
 
