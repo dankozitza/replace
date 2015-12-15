@@ -6,7 +6,7 @@ matching file_regex.
 ###Usage:
 
 ```bash
-   replace [-option] file_regex match_regex replacement
+replace [-option] file_regex match_regex replacement
 ```
 
 ###Options:
@@ -21,15 +21,21 @@ matching file_regex.
 ###Arguments:
 
 ```text
-   file_regex  - A Perl regular expression to match a file in the current
+   file_regex
+
+       A Perl regular expression to match a file in the current
        working directory. A directory path can be prepended to the regular
        expression. the / character is not allowed in the regular expression
        part.
 
-   match_regex - A Perl regular expression to be used for search and replace.
+   match_regex
 
-   replacement - A string that will replace whatever matches match_regex. This
-       string can contain the special variables #1, #2, #3, etc. These contain
+       A Perl regular expression to be used for search and replace.
+
+   replacement
+
+       A string that will replace whatever matches match_regex. This string
+       can contain the special variables #1, #2, #3, etc. These contain
        the groups set in the match_regex string. ex match_regex "(.)"
-       replacement "#1" replaces each character in the file.
+       replacement "#1" replaces each character in the file with itself.
 ```
