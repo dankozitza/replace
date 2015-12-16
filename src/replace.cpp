@@ -1,8 +1,7 @@
 //
 // replace.cpp
 //
-// replaces one or many strings that match a given regular expression in any
-// files that match the file regular expression.
+// Perform search-and-replace using pcre2 on any file names matching file_regex.
 //
 // Created by Daniel Kozitza
 //
@@ -30,8 +29,6 @@ int main(int argc, char *argv[]) {
    bool recursive      = false;
    bool quiet          = false;
    bool test           = false; // in test mode it will not modify any files
-   bool last_match     = false; // in last_match mode it will search backwards
-   bool match_info     = false; // in match_info mode it will print match info
    long total_replaced = 0;
    vector<string> new_files;
 
@@ -40,7 +37,7 @@ int main(int argc, char *argv[]) {
 
    if (argc < 4) {
       help(prog_name);
-      if (argc > 1 && argv[1][0] == '-' && argv[1][1] == 'h')
+      if (argc > 1 && argv[1][0] == '-' && pmatches(string(argv[1]), "h"))
          more_info();
       return 0;
    }
@@ -58,9 +55,7 @@ int main(int argc, char *argv[]) {
                case 'r': recursive  = true; break;
                case 'q': quiet      = true; break;
                case 't': test       = true; break;
-            // case 'l': last_match = true; break;
-            // case 'm': match_info = true; break;
-               case 'h': help(prog_name); more_info(); return 0;
+               case 'h': help(prog_name); more_info(); return 0; break;
             }
             opt_cnt++;
          }
@@ -215,8 +210,7 @@ int main(int argc, char *argv[]) {
 }
 
 void help(string p_name) {
-   cout << "\n";// << p_name;
-
+   cout << "\n";
    cout << fold(0, 80, p_name +
       " is a tool that performs search-and-replace using pcre2 on any file "
       "names matching file_regex.");
@@ -225,6 +219,7 @@ void help(string p_name) {
    cout << "Options:\n\n";
    cout << "   a - Replace all matches in the files that match file_regex.\n";
    cout << "   r - Search recursively for files that match file_regex.\n";
+   cout << "   q - Quiet mode. Nothing will be printed to stdout.\n";
    cout << "   t - Test mode. No files will be modified.\n";
    cout << "   h - Print more information.\n\n";
 }
@@ -235,7 +230,10 @@ void more_info() {
    cout << fold(
          7,
          80,
-         "_regex  - A Perl regular expression to match a file in the current working directory. A directory path can be prepended to the regular expression. the / character is not allowed in the regular expression part.");
+         "_regex  - A Perl regular expression to match a file in the current "
+         "working directory. A directory path can be prepended to the regular "
+         "expression. the / character is not allowed in the regular expression "
+         "part.");
    cout << "\n\n   ma";
    cout << fold(
          7,
@@ -247,9 +245,15 @@ void more_info() {
    cout << fold(
          7,
          80,
-         "lacement - A string that will replace whatever matches match_regex. This string can contain the special variables #1, #2, #3, etc. These contain the groups set in the match_regex string. ex match_regex \"(.)\" replacement \"#1\" replaces each character in the file.");
+         "lacement - A string that will replace whatever matches match_regex. "
+         "This string can contain the special variables #1, #2, #3, etc. These "
+         "contain the groups set in the match_regex string. ex match_regex "
+         "\"(.)\" replacement \"#1\" replaces each character in the file.");
    cout << "\n\n";
+}
 
+// last_match mode. option l, will replace the last match first.
+//
 // replaces one or many strings that match a given regular expression in any
 // files that match the file regular expression.
 
@@ -257,4 +261,3 @@ void more_info() {
    // directory path preceding the regular expression. They can be escaped with
    // a backslash to represent literal forwardslashes in the regular expression
    // part.
-}
