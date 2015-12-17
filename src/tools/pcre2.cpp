@@ -176,6 +176,7 @@ size_t tools::replace_all(string &s, string str_re, string rpl) {
    size_t rpl_i = 0;
    size_t scr_i = 0;
    while (scr_i < scratch.size()) {
+      // get the the backreference
       if (scratch[scr_i] == '#') {
          ResultParts rp;
          if (scr_i > 0)
@@ -189,6 +190,12 @@ size_t tools::replace_all(string &s, string str_re, string rpl) {
             rp.m_index = rp.m_index * 10 + scratch[scr_i] - '0';
             scr_i++;
          }
+
+         // #+ variable holds the last backreference
+         //if (scratch[scr_i] == '+') {
+
+         // #& variable holds the entire match_regex
+         //if (scratch[scr_i] == '&') {
 
          result_parts.push_back(rp);
          scratch = scratch.substr(scr_i);

@@ -28,8 +28,10 @@ int main(int argc, char *argv[]) {
    bool all            = false;
    bool recursive      = false;
    bool quiet          = false;
-   bool test           = false; // in test mode it will not modify any files
+   bool test           = false;
+   bool file_list      = false;
    long total_replaced = 0;
+   vector<string> files;
    vector<string> new_files;
 
    if (pmatches(m, prog_name, "^.*/([^/]+)$"))
@@ -55,6 +57,7 @@ int main(int argc, char *argv[]) {
                case 'r': recursive  = true; break;
                case 'q': quiet      = true; break;
                case 't': test       = true; break;
+               case 'f': file_list  = true; break;
                case 'h': help(prog_name); more_info(); return 0; break;
             }
             opt_cnt++;
@@ -63,7 +66,7 @@ int main(int argc, char *argv[]) {
       }
    }
 
-   if (total_opts + 4 != argc) {
+   if (!file_list && total_opts + 4 != argc) {
       cout << prog_name << ": invalid argument sequence\n";
       cout << "total_opts: " << total_opts << " argc: " << argc << "\n";
       help(prog_name);
@@ -71,13 +74,23 @@ int main(int argc, char *argv[]) {
    }
 
    // get arguments
-   file_regex  = string(argv[argc - 3]);
-   match_regex = string(argv[argc - 2]);
-   replacement = string(argv[argc - 1]);
+   if (!file_list) {
+      file_regex  = string(argv[argc - 3]);
+      match_regex = string(argv[argc - 2]);
+      replacement = string(argv[argc - 1]);
+   }
+   else {
+      //match_regex = string(argv[opt_cnt]
+      cout << "total_opts: " << total_opts << " argc: " << argc << "\n";
+      for (int i = total_opts + 2; i < argc; i++) {
+         files.push_back(string(argv[i]));
+      }
+      return 0;
+   }
 
    // get dir_path by searching for the last / in file_regex
    // get the new file_regex by removing dir_path from the original file_regex
-   if (pmatches(m, file_regex, "^(.*/)")) {
+   if (!file_list && pmatches(m, file_regex, "^(.*/)")) {
       dir_path = m[1];
       file_regex = file_regex.substr(dir_path.size());
    }
@@ -86,51 +99,54 @@ int main(int argc, char *argv[]) {
       cout << "\n";
       if (test)
          cout << prog_name << ": test mode: No files will be modified.\n";
-      cout << prog_name << ": searching directory: " << dir_path;
-      cout << " for file_regex: " << file_regex << endl;
-   }
-
-   vector<string> files;
-   if (recursive) {
-      if (!list_dir_r(dir_path, files)) {
-         cerr << prog_name << ": Error! exiting.\n\n";
-         return 1;
-      }
-   }
-   else {
-      if (!list_dir(dir_path, files)) {
-         cerr << prog_name << ": Error! exiting.\n\n";
-         return 1;
+      if (!file_list) {
+         cout << prog_name << ": searching directory: " << dir_path;
+         cout << " for file_regex: " << file_regex << endl;
       }
    }
 
-   // remove non-matching file names
-   new_files.clear();
-   for (size_t i = 0; i < files.size(); ++i) {
-      string tmp = files[i];
-      // remove directory path
-      if (pmatches(m, tmp, "^.*/([^/]+)$"))
-         tmp = m[1];
-      if (pmatches(tmp, file_regex))
-         new_files.push_back(files[i]);
-   }
-   files = new_files;
-
-   // TODO: ignore binary files
-   // loop through files removing directories and prefixing dir_path to file
-   // names in files.
-   new_files.clear();
-   for (size_t i = 0; i < files.size(); ++i) {
-      if (dir_path != ".") {
-         if (!dir_exists(dir_path + files[i]))
-            new_files.push_back(dir_path + files[i]);
+   if (!file_list) {
+      if (recursive) {
+         if (!list_dir_r(dir_path, files)) {
+            cerr << prog_name << ": Error! exiting.\n\n";
+            return 1;
+         }
       }
       else {
-         if (!dir_exists(files[i]))
+         if (!list_dir(dir_path, files)) {
+            cerr << prog_name << ": Error! exiting.\n\n";
+            return 1;
+         }
+      }
+
+      // remove non-matching file names
+      new_files.clear();
+      for (size_t i = 0; i < files.size(); ++i) {
+         string tmp = files[i];
+         // remove directory path
+         if (pmatches(m, tmp, "^.*/([^/]+)$"))
+            tmp = m[1];
+         if (pmatches(tmp, file_regex))
             new_files.push_back(files[i]);
       }
+      files = new_files;
+
+      // TODO: ignore binary files
+      // loop through files removing directories and prefixing dir_path to file
+      // names in files.
+      new_files.clear();
+      for (size_t i = 0; i < files.size(); ++i) {
+         if (dir_path != ".") {
+            if (!dir_exists(dir_path + files[i]))
+               new_files.push_back(dir_path + files[i]);
+         }
+         else {
+            if (!dir_exists(files[i]))
+               new_files.push_back(files[i]);
+         }
+      }
+      files = new_files;
    }
-   files = new_files;
 
    // loop through files finding match_regex matches and replacing them with
    // replacement on each line of each file.
@@ -221,6 +237,8 @@ void help(string p_name) {
    cout << "   r - Search recursively for files that match file_regex.\n";
    cout << "   q - Quiet mode. Nothing will be printed to stdout.\n";
    cout << "   t - Test mode. No files will be modified.\n";
+   cout << "   f - The file(s) will be input as a list at the end of the ";
+   cout << "arguments.\n";
    cout << "   h - Print more information.\n\n";
 }
 
@@ -247,17 +265,6 @@ void more_info() {
          80,
          "lacement - A string that will replace whatever matches match_regex. "
          "This string can contain the special variables #1, #2, #3, etc. These "
-         "contain the groups set in the match_regex string. ex match_regex "
-         "\"(.)\" replacement \"#1\" replaces each character in the file.");
+         "contain the backreferences.");
    cout << "\n\n";
 }
-
-// last_match mode. option l, will replace the last match first.
-//
-// replaces one or many strings that match a given regular expression in any
-// files that match the file regular expression.
-
-   // for the file_regex argument, forwardslashes are used to represent a
-   // directory path preceding the regular expression. They can be escaped with
-   // a backslash to represent literal forwardslashes in the regular expression
-   // part.
