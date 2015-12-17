@@ -44,7 +44,6 @@ replace [-option] file_regex match_regex replacement
    In the replacement string the # and 0 - 9 characters can be escaped with \
    to represent literal # and 0 - 9 characters.
 
-      ex:
 ```bash
    replace ^file$ "(\d)(\d+)" "#1\00 \# #2"
 ```
@@ -52,7 +51,6 @@ replace [-option] file_regex match_regex replacement
    The -f option allows a list of file names to be input instead of using a
    perl regular expression to search for the file.
 
-      ex:
 ```bash
    replace -f "abc" "def" file_1 file_2
 ```
