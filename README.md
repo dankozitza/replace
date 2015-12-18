@@ -45,14 +45,12 @@ replace [-option] file_regex match_regex replacement
    to represent literal # and 0 - 9 characters.
 
 ```bash
-   replace ^file$ "(\d)(\d+)" "#1\00 \# #2"
+replace ^file$ "(\d)(\d+)" "#1\00 \# #2"
 ```
 
    The -f option allows a list of file names to be input instead of using a
    perl regular expression to search for the file.
 
 ```bash
-   replace -f file_1 file_2 file_3... "abc" "def"
+replace -f file_1 file_2 file_3... "abc" "def"
 ```
-
-   This program is under construction.
