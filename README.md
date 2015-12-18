@@ -52,7 +52,7 @@ replace [-option] file_regex match_regex replacement
    perl regular expression to search for the file.
 
 ```bash
-   replace -f "abc" "def" file_1 file_2
+   replace -f file_1 file_2 file_3... "abc" "def"
 ```
 
    This program is under construction.

@@ -74,18 +74,15 @@ int main(int argc, char *argv[]) {
    }
 
    // get arguments
+   match_regex = string(argv[argc - 2]);
+   replacement = string(argv[argc - 1]);
    if (!file_list) {
       file_regex  = string(argv[argc - 3]);
-      match_regex = string(argv[argc - 2]);
-      replacement = string(argv[argc - 1]);
    }
    else {
-      //match_regex = string(argv[opt_cnt]
-      cout << "total_opts: " << total_opts << " argc: " << argc << "\n";
-      for (int i = total_opts + 2; i < argc; i++) {
+      for (int i = total_opts + 1; i < argc - 2; i++) {
          files.push_back(string(argv[i]));
       }
-      return 0;
    }
 
    // get dir_path by searching for the last / in file_regex
@@ -237,8 +234,7 @@ void help(string p_name) {
    cout << "   r - Search recursively for files that match file_regex.\n";
    cout << "   q - Quiet mode. Nothing will be printed to stdout.\n";
    cout << "   t - Test mode. No files will be modified.\n";
-   cout << "   f - The file(s) will be input as a list at the end of the ";
-   cout << "arguments.\n";
+   cout << "   f - The file(s) will be input as a list.\n";
    cout << "   h - Print more information.\n\n";
 }
 
