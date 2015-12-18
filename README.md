@@ -14,9 +14,10 @@ replace [-option] file_regex match_regex replacement
 ```text
    a - Replace all matches in the files that match file_regex.
    r - Search recursively for files that match file_regex.
+   q - Quiet mode. Nothing will be printed to stdout.
    t - Test mode. No files will be modified.
+   f - The file(s) will be input as a list.
    h - Print more information.
-   f - The file(s) will be input as a list at the end of the arguments.
 ```
 
 ###Arguments:
