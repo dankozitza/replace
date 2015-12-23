@@ -40,6 +40,12 @@ replace [-option] file_regex match_regex replacement
        the groups set in the match_regex string.
 ```
 
+###Install:
+
+```bash
+make install
+```
+
 ###Notes:
 
    In the replacement string the # and 0 - 9 characters can be escaped with \
