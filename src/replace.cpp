@@ -93,7 +93,8 @@ int main(int argc, char *argv[]) {
    }
 
    if (!quiet) {
-      cout << "\n";
+      if (test || !file_list)
+         cout << "\n";
       if (test)
          cout << prog_name << ": test mode: No files will be modified.\n";
       if (!file_list) {
