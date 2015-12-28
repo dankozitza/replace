@@ -156,6 +156,80 @@ struct ResultParts {
 };
 
 bool tools::replace_first(string &s, string str_re, string rpl) {
+   vector<string> m;
+   vector<ResultParts> result_parts;
+   string scratch = rpl;
+
+   while(tools::pmatches(m, scratch, "^(.*)\\\\#(.*)$")) {
+      scratch = m[1] + "ph" + m[2];
+   }
+
+   size_t rpl_i = 0;
+   size_t scr_i = 0;
+   while (scr_i < scratch.size()) {
+      // get the the backreference
+      if (scratch[scr_i] == '#') {
+         ResultParts rp;
+         if (scr_i > 0)
+            rp.part = rpl.substr(rpl_i, scr_i);
+         else
+            rp.part = "";
+
+         rp.m_index = 0;
+         scr_i++;
+         while (scratch[scr_i] >= '0' && scratch[scr_i] <= '9') {
+            rp.m_index = rp.m_index * 10 + scratch[scr_i] - '0';
+            scr_i++;
+         }
+
+         // #+ variable holds the last backreference
+         //if (scratch[scr_i] == '+') {
+
+         // #& variable holds the entire match_regex
+         //if (scratch[scr_i] == '&') {
+
+         result_parts.push_back(rp);
+         scratch = scratch.substr(scr_i);
+         rpl_i += scr_i;
+         scr_i = 0;
+      }
+      else {
+         scr_i++;
+      }
+   }
+   ResultParts last_rp;
+   last_rp.part = rpl.substr(rpl_i);
+   last_rp.m_index = 0;
+   result_parts.push_back(last_rp);
+
+   // replace \# with # and \0 - \9 with 0 - 9
+   for (size_t i = 0; i < result_parts.size(); ++i) {
+      while (pmatches(m, result_parts[i].part, "^(.*)\\\\#(.*)$")) {
+         result_parts[i].part = m[1] + "#" + m[2];
+      }
+      while (pmatches(m, result_parts[i].part, "^(.*)\\\\(\\d)(.*)$")) {
+         result_parts[i].part = m[1] + m[2] + m[3];
+      }
+   }
+
+   if (pmatches(m, s, "^(.*?)" + str_re + "(.*)$")) {
+      s = m[1];
+      for (size_t i = 0; i < result_parts.size(); ++i) {
+
+         if (m.size() - 2 <= result_parts[i].m_index) {
+            cerr << "tools::replace_all: Number of variables in match regex: ";
+            cerr << "`" << str_re << "` does not match variable named in ";
+            cerr << "replacement string: `" << rpl << "`.\n";
+            exit(1);
+         }
+
+         s += result_parts[i].part;
+         if (result_parts[i].m_index > 0)
+            s += m[result_parts[i].m_index + 1];
+      }
+      s += m[m.size() - 1];
+      return true;
+   }
    return false;
 }
 
