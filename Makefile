@@ -1,10 +1,10 @@
-# 980e22acaf7aa1e7ffdf8fa6fd0b0c6c
+# d7e2eb16aefc397c1bccb2fd467e4c2d
 # Generated with vfnmkmc by the mc program.
 PREFIX=/usr/local
 CFLAGS=-O$(O)  -std=c++11
 O=2
 LFLAGS= -l pcre2-8
-OBJS=objs/replace.o objs/radix.o objs/vectors.o objs/pcre2.o objs/system.o objs/utils.o objs/strings.o
+OBJS=objs/options.o objs/replace.o objs/commands.o objs/radix.o objs/vectors.o objs/pcre2.o objs/system.o objs/utils.o objs/strings.o
 
 
 .PHONY: all
@@ -14,9 +14,15 @@ all: objs replace
 	@ echo "    LINK ./replace"
 	@ $(CXX) $(OBJS) -o "./replace" $(LFLAGS)
 
-objs/replace.o: src/replace.cpp src/tools.hpp src/sorters.hpp
+objs/options.o: src/options.cpp src/options.hpp src/tools.hpp
+	@ echo "    CXX  src/options.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/options.cpp" -o $@
+objs/replace.o: src/replace.cpp src/options.hpp src/tools.hpp src/sorters.hpp
 	@ echo "    CXX  src/replace.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/replace.cpp" -o $@
+objs/commands.o: src/commands.cpp src/commands.hpp src/tools.hpp
+	@ echo "    CXX  src/commands.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/commands.cpp" -o $@
 objs/radix.o: src/sorters/radix.cpp src/sorters/../sorters.hpp
 	@ echo "    CXX  src/sorters/radix.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/sorters/radix.cpp" -o $@

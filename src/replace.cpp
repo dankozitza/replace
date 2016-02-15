@@ -12,6 +12,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include "options.hpp"
 #include "tools.hpp"
 #include "sorters.hpp"
 
@@ -25,64 +26,59 @@ int main(int argc, char *argv[]) {
    string dir_path     = ".";
    string prog_name    = string(argv[0]);
    string m[10];
+   options opt;
    bool all            = false;
    bool recursive      = false;
    bool quiet          = false;
    bool test           = false;
    bool file_list      = false;
+   bool show_help      = false;
    long total_replaced = 0;
+   vector<string> args;
    vector<string> files;
    vector<string> new_files;
+
+   opt.handle('a', all);
+   opt.handle('r', recursive);
+   opt.handle('q', quiet);
+   opt.handle('f', file_list);
+   opt.handle('h', show_help);
+   opt.handle('t', test);
+
+   for (int i = 1; i < argc; ++i)
+      args.push_back(argv[i]);
+
+   opt.evaluate(args);
 
    if (pmatches(m, prog_name, "^.*/([^/]+)$"))
       prog_name = m[1];
 
-   if (argc < 4) {
+   if (show_help) {
       help(prog_name);
-      if (argc > 1 && argv[1][0] == '-' && pmatches(string(argv[1]), "h"))
-         more_info();
+      more_info();
       return 0;
    }
 
-   signal(SIGINT, signals_callback_handler);
-
-   // get options
-   int total_opts = 0;
-   for (int i = 0; i < argc - 3; ++i) {
-      if (argv[i][0] == '-') {
-         int opt_cnt = 1;
-         while (argv[i][opt_cnt] != '\0') {
-            switch (argv[i][opt_cnt]) {
-               case 'a': all        = true; break;
-               case 'r': recursive  = true; break;
-               case 'q': quiet      = true; break;
-               case 't': test       = true; break;
-               case 'f': file_list  = true; break;
-               case 'h': help(prog_name); more_info(); return 0; break;
-            }
-            opt_cnt++;
-         }
-         total_opts++;
-      }
+   if (!file_list && args.size() != 3) {
+      cout << prog_name << ": Invalid argument sequence.\n";
+      help(prog_name);
+      return 0;
    }
-
-   if (!file_list && total_opts + 4 != argc) {
-      cout << prog_name << ": invalid argument sequence\n";
-      cout << "total_opts: " << total_opts << " argc: " << argc << "\n";
+   if (file_list && args.size() < 3) {
+      cout << prog_name << ": Invalid argument sequence.\n";
       help(prog_name);
       return 0;
    }
 
    // get arguments
-   match_regex = string(argv[argc - 2]);
-   replacement = string(argv[argc - 1]);
+   match_regex = args[args.size() - 2];
+   replacement = args[args.size() - 1];
    if (!file_list) {
-      file_regex  = string(argv[argc - 3]);
+      file_regex = args[args.size() - 3];
    }
    else {
-      for (int i = total_opts + 1; i < argc - 2; i++) {
-         files.push_back(string(argv[i]));
-      }
+      for (size_t i = 0; i < args.size() - 2; ++i)
+         files.push_back(args[i]);
    }
 
    // get dir_path by searching for the last / in file_regex
