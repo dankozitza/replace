@@ -19,6 +19,117 @@
 //
 vector<void (*)(int)> SigHandlers[16];
 
+
+// error
+//
+// Creates a static Error string and returns a pointer to it.
+//
+// TODO: May want to allocate these differently in case the caller
+//       decides to ignore the returned errors.
+//
+tools::Error tools::error(string message) {
+   static string tmp;
+   if (message == "")
+      tmp = "Generic error.";
+   else
+      tmp = message;
+
+   return tmp.c_str();
+}
+
+//  errorf
+//
+//  Takes a format string of the form "%i %f %c %s", where the character
+//  following % specifies the type of the argument in that position.
+//
+//  i = int
+//  f = float
+//  c = char
+//  s = string (char *)
+//
+//  Following the format specification is a variable 
+//  list of arguments. Each argument corresponds to 
+//  a format character in the format string.
+//
+tools::Error tools::errorf(char const * format, ...) {
+   va_list vl;
+   string msg;
+
+   //  format is the last argument specified; you must access 
+   //  all others using the variable-argument macros.
+   va_start(vl, format);
+
+   // build the string as we go
+   for(int i = 0; format[i] != '\0'; ++i ) {
+
+      // skip escaped escape
+      if (format[i] == '\\' && format[i+1] == '\\') {
+         msg += "\\";
+         i++;
+         continue;
+      }
+
+      // skip escaped %
+      if (format[i] == '\\' && format[i+1] == '%') {
+         msg += "%";
+         i++;
+         continue;
+      }
+
+      if (format[i] != '%') {
+         msg += format[i];
+         continue;
+      }
+
+      // format[i] is %. get the type and increment i
+      char t = format[++i];
+      // TODO: maybe this should be dynamic
+      char buff[100];
+      buff[0] = '\0';
+
+      union Printable_t {
+         long    i;
+         float   f;
+         char    c;
+         char   *s;
+      } Printable;
+
+      switch( t ) {   // Type to expect.
+         case 'i':
+            Printable.i = va_arg( vl, long );
+            sprintf(buff, "%i", Printable.i);
+            msg += buff;
+         break;
+
+         case 'f':
+            Printable.f = va_arg( vl, double );
+            sprintf(buff, "%f", Printable.f);
+            msg += buff;
+         break;
+
+         case 'c':
+            Printable.c = va_arg( vl, int );
+            sprintf(buff, "%c", Printable.c);
+            cout << "buff: " << buff << endl;
+            msg += buff;
+         break;
+
+         case 's':
+            Printable.s = va_arg( vl, char * );
+            sprintf(buff, "%s", Printable.s);
+            msg += buff;
+         break;
+
+         default:
+            msg += '%' + t;
+         break;
+      }
+   }
+
+   va_end( vl );
+   return tools::error(msg);
+}
+
 // signals_callback_handler
 //
 // the signal handler for all signal handlers. runs all the signal handlers in 

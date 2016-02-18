@@ -11,7 +11,8 @@
 
 #include <iostream>
 #include <map>
-//#include <regex>
+#include <stdio.h>
+#include <stdarg.h>
 #include <vector>
 
 using namespace std;
@@ -24,6 +25,9 @@ namespace tools {
    string get_src_files(string src_dir);
 
    // system.cpp
+   typedef char const * Error;
+   Error error(string message = "");
+   Error errorf(char const * format, ...);
    void signals_callback_handler(int signum);
    void signals(int sig, void (*callback_func)(int));
    bool require(int sys_exit_val, string msg = "");

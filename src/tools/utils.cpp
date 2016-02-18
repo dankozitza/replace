@@ -51,6 +51,8 @@ bool tools::save_vfnmkmc_conf(map<string, string>& config) {
 
 vector<string> Targets;
 
+// this function can be handed to atexit. It will remove all the file names
+// in the targets vector.
 void destroy_targets() {
    for (const auto fname : Targets) {
       cout << "tools::destroy_targets: removing `" << fname << "`\n";

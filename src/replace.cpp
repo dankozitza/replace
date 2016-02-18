@@ -21,6 +21,16 @@ using namespace tools;
 void help(string prog_name);
 void more_info();
 
+char const * testfunc() {
+   //static char tmp[4];
+   //tmp[0] = 'a';
+   //tmp[1] = 'b';
+   //tmp[2] = 'c';
+   //tmp[3] = '\0';
+   static string s = "tmp_string";
+   return s.c_str();
+}
+
 int main(int argc, char *argv[]) {
    string file_regex, match_regex, replacement;
    string dir_path     = ".";
@@ -37,6 +47,9 @@ int main(int argc, char *argv[]) {
    vector<string> args;
    vector<string> files;
    vector<string> new_files;
+   Error e;
+
+   signal(SIGINT, signals_callback_handler);
 
    opt.handle('a', all);
    opt.handle('r', recursive);
@@ -45,13 +58,18 @@ int main(int argc, char *argv[]) {
    opt.handle('h', show_help);
    opt.handle('t', test);
 
-   for (int i = 1; i < argc; ++i)
+   for (size_t i = 1; i < argc; ++i)
       args.push_back(argv[i]);
-
-   opt.evaluate(args);
 
    if (pmatches(m, prog_name, "^.*/([^/]+)$"))
       prog_name = m[1];
+
+   e = opt.evaluate(args);
+   if (e != NULL) {
+      help(prog_name);
+      cout << prog_name << "::" << e << "\n";
+      return 0;
+   }
 
    if (show_help) {
       help(prog_name);

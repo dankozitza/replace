@@ -1,10 +1,10 @@
-# d7e2eb16aefc397c1bccb2fd467e4c2d
+# cfed15ef0e8654cce6abfc51c44845a7
 # Generated with vfnmkmc by the mc program.
 PREFIX=/usr/local
 CFLAGS=-O$(O)  -std=c++11
 O=2
 LFLAGS= -l pcre2-8
-OBJS=objs/options.o objs/replace.o objs/commands.o objs/radix.o objs/vectors.o objs/pcre2.o objs/system.o objs/utils.o objs/strings.o
+OBJS=objs/options.o objs/replace.o objs/radix.o objs/pcre2.o objs/strings.o objs/system.o objs/utils.o objs/vectors.o
 
 
 .PHONY: all
@@ -20,18 +20,15 @@ objs/options.o: src/options.cpp src/options.hpp src/tools.hpp
 objs/replace.o: src/replace.cpp src/options.hpp src/tools.hpp src/sorters.hpp
 	@ echo "    CXX  src/replace.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/replace.cpp" -o $@
-objs/commands.o: src/commands.cpp src/commands.hpp src/tools.hpp
-	@ echo "    CXX  src/commands.cpp"
-	@ $(CXX) $(CFLAGS) -c "src/commands.cpp" -o $@
 objs/radix.o: src/sorters/radix.cpp src/sorters/../sorters.hpp
 	@ echo "    CXX  src/sorters/radix.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/sorters/radix.cpp" -o $@
-objs/vectors.o: src/tools/vectors.cpp src/tools/../tools.hpp
-	@ echo "    CXX  src/tools/vectors.cpp"
-	@ $(CXX) $(CFLAGS) -c "src/tools/vectors.cpp" -o $@
 objs/pcre2.o: src/tools/pcre2.cpp src/tools/../tools.hpp
 	@ echo "    CXX  src/tools/pcre2.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/tools/pcre2.cpp" -o $@
+objs/strings.o: src/tools/strings.cpp src/tools/../tools.hpp
+	@ echo "    CXX  src/tools/strings.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/tools/strings.cpp" -o $@
 objs/system.o: src/tools/system.cpp src/tools/../tools.hpp
 	@ echo "    CXX  src/tools/system.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/tools/system.cpp" -o $@
@@ -39,9 +36,9 @@ objs/utils.o: src/tools/utils.cpp src/tools/../sorters.hpp \
  src/tools/../tools.hpp
 	@ echo "    CXX  src/tools/utils.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/tools/utils.cpp" -o $@
-objs/strings.o: src/tools/strings.cpp src/tools/../tools.hpp
-	@ echo "    CXX  src/tools/strings.cpp"
-	@ $(CXX) $(CFLAGS) -c "src/tools/strings.cpp" -o $@
+objs/vectors.o: src/tools/vectors.cpp src/tools/../tools.hpp
+	@ echo "    CXX  src/tools/vectors.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/tools/vectors.cpp" -o $@
 
 objs:
 	@ mkdir "objs"

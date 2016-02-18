@@ -5,7 +5,6 @@
 //
 
 #include "options.hpp"
-#include "tools.hpp"
 
 options::options() {
    args_removed = 0;
@@ -36,7 +35,7 @@ void options::handle(
    opts[option_entry] = tmp;
 }
 
-void options::evaluate(vector<string>& arguments) {
+tools::Error options::evaluate(vector<string>& arguments) {
    vector<string> new_arguments;
    size_t i;
    for (i = 0; i < arguments.size(); ++i) {
@@ -64,16 +63,16 @@ void options::evaluate(vector<string>& arguments) {
             if (opt.has_arguments) {
                // make sure this is the last character in the option string
                if (j+1 != arguments[i].size()) {
-                  cout << "options::evaluate: Options with arguments must be ";
-                  cout << "followed by a space!\n";
-                  exit(1);
+                  return tools::errorf(
+                        "options::evaluate: The %c option must be followed by "
+                        "it's arguments.\n", c);
                }
 
                for (size_t k = 0; k < opt.opt_args->size(); ++k) {
                   if (arguments.size() <= i + 1 + k) {
-                     cout << "options::evaluate: The " << c << " option requires ";
-                     cout << opt.opt_args->size() << " arguments.\n";
-                     exit(1);
+                     return tools::errorf(
+                        "options::evaluate: The %c option requires "
+                        "%i arguments.\n", c, opt.opt_args->size());
                   }
                   args_removed++;
                   opt.opt_args->operator[](k) = arguments[i + 1 + k];
@@ -91,7 +90,7 @@ void options::evaluate(vector<string>& arguments) {
       }
    }
    if (i == 0)
-      return;
+      return NULL;
    // add remaining arguments in case -- option was given
    for (i; i < arguments.size(); ++i) {
       new_arguments.push_back(arguments[i]);
@@ -99,6 +98,7 @@ void options::evaluate(vector<string>& arguments) {
    arguments.resize(0);
    for (int m = 0; m < new_arguments.size(); ++m)
       arguments.push_back(new_arguments[m]);
+   return NULL;
 }
 
 size_t options::arguments_removed() {
