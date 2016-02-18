@@ -21,16 +21,6 @@ using namespace tools;
 void help(string prog_name);
 void more_info();
 
-char const * testfunc() {
-   //static char tmp[4];
-   //tmp[0] = 'a';
-   //tmp[1] = 'b';
-   //tmp[2] = 'c';
-   //tmp[3] = '\0';
-   static string s = "tmp_string";
-   return s.c_str();
-}
-
 int main(int argc, char *argv[]) {
    string file_regex, match_regex, replacement;
    string dir_path     = ".";
