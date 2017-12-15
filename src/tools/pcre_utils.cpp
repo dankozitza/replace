@@ -1,13 +1,13 @@
 //
-// pcre2.cpp
+// pcre_utils.cpp
 //
 // Created by Daniel Kozitza
 
-#define PCRE2_CODE_UNIT_WIDTH 8
+#define PCRE_CODE_UNIT_WIDTH 8
 
 #include "../tools.hpp"
 #include <cassert>
-#include <pcre2.h>
+#include <pcre++.h>
 
 bool tools::pmatches(string s, string str_re) {
    string *placeholder;
@@ -39,88 +39,20 @@ bool tools::pmatches(
       bool get_res) {
 
    results.clear();
-   pcre2_code *re;
 
-   // PCRE2_SPTR is a pointer to unsigned code units of
-   // the appropriate width (8, 16, or 32 bits).
-   PCRE2_SPTR pattern;
-   PCRE2_SPTR subject;
-   PCRE2_SPTR name_table;
+   pcrepp::Pcre re(str_re);
 
-   PCRE2_SIZE erroroffset;
-   PCRE2_SIZE *ovector;
-
-   size_t subject_length;
-   pcre2_match_data *match_data;
-
-   pattern = (PCRE2_SPTR)str_re.c_str();
-   subject = (PCRE2_SPTR)s.c_str();
-
-   int errornumber;
-   int rc;
-
-   // compile the regular expression pattern
-   re = pcre2_compile(
-         pattern,               // the pattern
-         PCRE2_ZERO_TERMINATED, // indicates the pattern is zero-terminated
-         0,                     // default options
-         &errornumber,
-         &erroroffset,
-         NULL);                 // use the default compile context
-
-   if (re == NULL) {
-      // compilation failed
-      PCRE2_UCHAR buffer[256];
-      pcre2_get_error_message(errornumber, buffer, sizeof(buffer));
-      cerr << "tools::pmatch: PCRE2 compilation failed at offset ";
-      cerr << (int)erroroffset << ": " << buffer << "\n";
-      return false;
-   }
-
-   // create match data
-   match_data = pcre2_match_data_create_from_pattern(re, NULL);
-
-   // do the match
-   rc = pcre2_match(
-         re,         // the compiled pattern
-         subject,    // the subject string
-         s.size(),   // the length of the subject
-         0,          // start at offset 0 in the subject
-         0,          // default options
-         match_data, // block for storing the result
-         NULL);      // use default match context
-
-   if (rc < 0) {
-      // matching failed
-      if (rc != PCRE2_ERROR_NOMATCH) {
-         cerr << "tools::pmatch: matching error " << rc << ".\n";
+   if (re.search(s) == true) {
+      if (get_res && re.matches() > 0) {
+         results.resize(re.matches() + 1);
+         results[0] = s;
+         for (int i = 0; i < re.matches(); i++) {
+            results[i+1] = re[i];
+         }
       }
-      pcre2_match_data_free(match_data);
-      pcre2_code_free(re);
-      return false;
+      return true;
    }
-
-   // match succeded.
-
-   if (get_res) {
-      // populate the results array.
-      // get a pointer to the output vector, where string offsets are stored.
-      ovector = pcre2_get_ovector_pointer(match_data);
-
-      // The output vector wasn't big enough. This should not happen, because we
-      // used pcre2_match_data_create_from_pattern() above.
-      assert(rc != 0);
-
-      for (int i = 0; i < rc; ++i) {
-         results.push_back("");
-         PCRE2_SPTR substring_start = subject + ovector[2*i];
-         size_t substring_length = ovector[2*i+1] - ovector[2*i];
-         for (int j = 0; j < substring_length; ++j)
-            results[i].push_back(substring_start[j]);
-      }
-   }
-
-   return true;
+   return false;
 }
 
 void tools::test_pmatches() {

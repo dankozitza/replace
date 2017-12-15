@@ -55,7 +55,7 @@ namespace tools {
    //void test_matches();
    //void test_replace();
 
-   // pcre2.cpp
+   // pcre_utils.cpp
    bool pmatches(string s, string str_re);
    bool pmatches(string results[], string s, string str_re);
    bool pmatches(vector<string> &results, string s, string str_re);

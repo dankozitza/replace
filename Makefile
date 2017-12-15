@@ -1,10 +1,10 @@
-# cfed15ef0e8654cce6abfc51c44845a7
+# d8c8969783183972f9fa22ab47d95562
 # Generated with vfnmkmc by the mc program.
 PREFIX=/usr/local
 CFLAGS=-O$(O)  -std=c++11
 O=2
-LFLAGS= -l pcre2-8
-OBJS=objs/options.o objs/replace.o objs/radix.o objs/pcre2.o objs/strings.o objs/system.o objs/utils.o objs/vectors.o
+LFLAGS= -l pcre++
+OBJS=objs/options.o objs/replace.o objs/radix.o objs/pcre_utils.o objs/strings.o objs/system.o objs/utils.o objs/vectors.o
 
 
 .PHONY: all
@@ -23,9 +23,9 @@ objs/replace.o: src/replace.cpp src/options.hpp src/tools.hpp src/sorters.hpp
 objs/radix.o: src/sorters/radix.cpp src/sorters/../sorters.hpp
 	@ echo "    CXX  src/sorters/radix.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/sorters/radix.cpp" -o $@
-objs/pcre2.o: src/tools/pcre2.cpp src/tools/../tools.hpp
-	@ echo "    CXX  src/tools/pcre2.cpp"
-	@ $(CXX) $(CFLAGS) -c "src/tools/pcre2.cpp" -o $@
+objs/pcre_utils.o: src/tools/pcre_utils.cpp src/tools/../tools.hpp
+	@ echo "    CXX  src/tools/pcre_utils.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/tools/pcre_utils.cpp" -o $@
 objs/strings.o: src/tools/strings.cpp src/tools/../tools.hpp
 	@ echo "    CXX  src/tools/strings.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/tools/strings.cpp" -o $@
