@@ -42,15 +42,6 @@ namespace tools {
 
    // strings.cpp
    string fold(int indent_width, int max_line_width, string s);
-   //bool matches(string s, string str_re);
-   //bool matches(string results[], string s, string str_re);
-   //bool matches(vector<string>& results, string s, string str_re);
-   //bool matches(smatch& sm, string s, string str_re);
-   //bool replace_all(
-   //      string &s,
-   //      string str_re,
-   //      string fmt,
-   //      regex_constants::match_flag_type mf = regex_constants::match_default);
    //bool find_in_file(string str_re, string fname);
    //void test_matches();
    //void test_replace();

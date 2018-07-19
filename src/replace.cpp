@@ -14,7 +14,6 @@
 #include <iostream>
 #include "options.hpp"
 #include "tools.hpp"
-#include "sorters.hpp"
 
 using namespace tools;
 
@@ -67,12 +66,7 @@ int main(int argc, char *argv[]) {
       return 0;
    }
 
-   if (!file_list && args.size() != 3) {
-      cout << prog_name << ": Invalid argument sequence.\n";
-      help(prog_name);
-      return 0;
-   }
-   if (file_list && args.size() < 3) {
+   if (!file_list && args.size() != 3 || file_list && args.size() < 3) {
       cout << prog_name << ": Invalid argument sequence.\n";
       help(prog_name);
       return 0;
@@ -114,11 +108,9 @@ int main(int argc, char *argv[]) {
             return 1;
          }
       }
-      else {
-         if (!list_dir(dir_path, files)) {
-            cerr << prog_name << ": Error! exiting.\n\n";
-            return 1;
-         }
+      else if (!list_dir(dir_path, files)) {
+         cerr << prog_name << ": Error! exiting.\n\n";
+         return 1;
       }
 
       // remove non-matching file names

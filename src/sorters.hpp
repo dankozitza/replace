@@ -1,8 +1,6 @@
 //
 // sorters.hpp
 //
-// Created by Daniel Kozitza
-//
 
 #ifndef _SORTERS
 #define _SORTERS
