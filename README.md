@@ -3,13 +3,13 @@
 replace is a tool that performs search-and-replace using pcre++ on file names
 matching file_regex.
 
-###Usage:
+### Usage:
 
 ```bash
 replace [-option] file_regex match_regex replacement
 ```
 
-###Options:
+### Options:
 
 ```text
    a - Replace all matches in the files that match file_regex.
@@ -20,7 +20,7 @@ replace [-option] file_regex match_regex replacement
    h - Print more information.
 ```
 
-###Arguments:
+### Arguments:
 
 ```text
    file_regex
@@ -40,15 +40,15 @@ replace [-option] file_regex match_regex replacement
        the groups set in the match_regex string.
 ```
 
-###Install:
+### Install:
 
 ```bash
 make install
 ```
 
-###Notes:
+### Notes:
 
-   In the replacement string the # and 0 - 9 characters can be escaped with \
+   In the replacement string the # and 0 - 9 characters can be escaped with \\
    to represent literal # and 0 - 9 characters.
 
 ```bash
