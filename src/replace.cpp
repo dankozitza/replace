@@ -222,7 +222,7 @@ int main(int argc, char *argv[]) {
 void help(string p_name) {
    cout << "\n";
    cout << fold(0, 80, p_name +
-      " is a tool that performs search-and-replace using pcre++ on file "
+      " is a tool that performs search-and-replace using std::regex on file "
       "names matching file_regex.");
    cout << "\n\nUsage:\n\n   " << p_name;
    cout << " [-option] file_regex match_regex replacement\n\n";
