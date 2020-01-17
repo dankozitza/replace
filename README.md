@@ -1,6 +1,6 @@
 # replace
 
-replace is a tool that performs search-and-replace using pcre++ on file names
+replace is a tool that performs search-and-replace using std::regex on file names
 matching file_regex.
 
 ### Usage:

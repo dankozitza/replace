@@ -3,14 +3,12 @@
 //
 // Created by Daniel Kozitza
 
-#define PCRE_CODE_UNIT_WIDTH 8
-
 #include "../tools.hpp"
 #include <cassert>
-#include <pcre++.h>
+#include <regex>
 
 bool tools::pmatches(string s, string str_re) {
-   string *placeholder;
+   vector<string> placeholder(0);
    return pmatches(placeholder, s, str_re, false);
 }
 
@@ -23,12 +21,13 @@ bool tools::pmatches(vector<string> &results, string s, string str_re) {
 }
 
 bool tools::pmatches(string results[], string s, string str_re, bool get_res) {
-   vector<string> m;
+   vector<string> m(0);
    if (!pmatches(m, s, str_re, get_res))
       return false;
 
-   for (size_t i = 0; i < m.size(); ++i)
+   for (size_t i = 0; i < m.size(); ++i) {
       results[i] = m[i];
+   }
    return true;
 }
 
@@ -40,19 +39,42 @@ bool tools::pmatches(
 
    results.clear();
 
-   pcrepp::Pcre re(str_re);
+   try {
+      std::regex re(str_re.c_str());
+      std::smatch match;
 
-   if (re.search(s) == true) {
-      if (get_res && re.matches() > 0) {
-         results.resize(re.matches() + 1);
+      if (std::regex_search(s, match, re)) {
+         results.resize(match.size());
          results[0] = s;
-         for (int i = 0; i < re.matches(); i++) {
-            results[i+1] = re[i];
+         for (int i = 1; i < match.size(); i++) {
+            results[i] = match.str(i);
          }
+         return true;
       }
-      return true;
+      else {
+         return false;
+      }
+   } catch (std::regex_error& e) {
+     // Syntax error in the regular expression
+     cout << "tools::pcre_utils: Syntax error in regular expression `"
+          << str_re.c_str() << "`: " << e.what() << endl;
+     return false;
    }
-   return false;
+
+   // pcre++ code
+   //pcrepp::something re(str_re);
+
+   //if (re.search(s) == true) {
+   //   if (get_res && re.matches() > 0) {
+   //      results.resize(re.matches() + 1);
+   //      results[0] = s;
+   //      for (int i = 0; i < re.matches(); i++) {
+   //         results[i+1] = re[i];
+   //      }
+   //   }
+   //   return true;
+   //}
+   //return false;
 }
 
 void tools::test_pmatches() {
@@ -80,6 +102,9 @@ void tools::test_pmatches() {
 
    if (am[2] != "")
       cout << "test failed!, match 2 [" << am[2] << "] did not match!\n";
+
+   // test syntax error
+   pmatches(am, "subject", "(");
 }
 
 struct ResultParts {

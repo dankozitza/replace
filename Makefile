@@ -1,9 +1,9 @@
-# d8c8969783183972f9fa22ab47d95562
+# 0c44dbb736b898d5760cc68d13cbb7ac
 # Generated with vfnmkmc by the mc program.
 PREFIX=/usr/local
 CFLAGS=-O$(O)  -std=c++11
 O=2
-LFLAGS= -l pcre++
+LFLAGS=
 OBJS=objs/options.o objs/replace.o objs/radix.o objs/pcre_utils.o objs/strings.o objs/system.o objs/utils.o objs/vectors.o
 
 
@@ -17,7 +17,7 @@ all: objs replace
 objs/options.o: src/options.cpp src/options.hpp src/tools.hpp
 	@ echo "    CXX  src/options.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/options.cpp" -o $@
-objs/replace.o: src/replace.cpp src/options.hpp src/tools.hpp src/sorters.hpp
+objs/replace.o: src/replace.cpp src/options.hpp src/tools.hpp
 	@ echo "    CXX  src/replace.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/replace.cpp" -o $@
 objs/radix.o: src/sorters/radix.cpp src/sorters/../sorters.hpp
