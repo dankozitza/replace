@@ -18,11 +18,12 @@ void options::handle(char option_entry, bool& option_set) {
    opts[option_entry] = tmp;
 }
 
-void options::handle(char option_entry, bool& option_set, string& argument) {
-   vector<string> tmp(1);
-   handle(option_entry, option_set, tmp);
-   argument = tmp[0];
-}
+// seg faults
+//void options::handle(char option_entry, bool& option_set, string& argument) {
+//   vector<string> tmp(1);
+//   //tmp[0] = argument;
+//   handle(option_entry, option_set, tmp);
+//}
 
 void options::handle(
       char option_entry,
@@ -65,14 +66,14 @@ tools::Error options::evaluate(vector<string>& arguments) {
                if (j+1 != arguments[i].size()) {
                   return tools::errorf(
                         "options::evaluate: The %c option must be followed by "
-                        "it's arguments.\n", c);
+                        "%i arguments.", c, opt.opt_args->size());
                }
 
                for (size_t k = 0; k < opt.opt_args->size(); ++k) {
                   if (arguments.size() <= i + 1 + k) {
                      return tools::errorf(
                         "options::evaluate: The %c option requires "
-                        "%i arguments.\n", c, opt.opt_args->size());
+                        "%i arguments.", c, opt.opt_args->size());
                   }
                   args_removed++;
                   opt.opt_args->operator[](k) = arguments[i + 1 + k];
@@ -82,8 +83,15 @@ tools::Error options::evaluate(vector<string>& arguments) {
             }
 
             opts[c] = opt;
-            i += removed;
-            break;
+            if (j+1 >= arguments[i].size()) {
+               i += removed;
+               break;
+            }
+            else if (removed != 0) {
+               return tools::errorf(
+                  "options::evaluate: The %c option was entered incorrectly.",
+                  c);
+            }
          }
          else {
             cout << "options::evaluate: Invalid option `" << c << "`.\n";
