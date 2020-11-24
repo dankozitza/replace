@@ -83,6 +83,7 @@ tools::Error options::evaluate(vector<string>& arguments) {
 
             opts[c] = opt;
             i += removed;
+            break;
          }
          else {
             cout << "options::evaluate: Invalid option `" << c << "`.\n";

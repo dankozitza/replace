@@ -187,6 +187,7 @@ bool tools::require(int sys_exit_val, string msg)
       cout << "exiting.\n";
       exit(EXIT_FAILURE);
    }
+   return true;
 }
 
 // require
@@ -202,6 +203,7 @@ bool tools::require(bool func_return_val, string msg) {
       cout << "exiting.\n";
       exit(EXIT_FAILURE);
    }
+   return true;
 }
 
 // dir_exists
