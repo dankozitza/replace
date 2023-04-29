@@ -9,6 +9,7 @@
 #include <csignal>
 #include <cstdlib>
 #include <dirent.h>
+#include <sys/ioctl.h>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -220,10 +221,13 @@ int main(int argc, char *argv[]) {
 }
 
 void help(string p_name) {
+
+   struct winsize ws;
+   ioctl(0, TIOCGWINSZ, &ws);
+
    cout << "\n";
-   cout << fold(0, 80, p_name +
-      " is a tool that performs search-and-replace using std::regex on file "
-      "names matching file_regex.");
+   cout << fold(0, ws.ws_col, "   " + p_name +
+      " is a tool that performs search-and-replace using perl regular expressions.");
    cout << "\n\nUsage:\n\n   " << p_name;
    cout << " [-option] file_regex match_regex replacement\n\n";
    cout << "Options:\n\n";
@@ -236,11 +240,15 @@ void help(string p_name) {
 }
 
 void more_info() {
+
+   struct winsize ws;
+   ioctl(0, TIOCGWINSZ, &ws);
+
    cout << "Arguments:\n\n";
    cout << "   file";
    cout << fold(
          7,
-         80,
+         ws.ws_col,
          "_regex  - A Perl regular expression to match a file in the current "
          "working directory. A directory path can be prepended to the regular "
          "expression. the / character is not allowed in the regular expression "
@@ -248,14 +256,14 @@ void more_info() {
    cout << "\n\n   ma";
    cout << fold(
          7,
-         80,
+         ws.ws_col,
          "tch_regex - A Perl regular expression to be used for search and "
          "replace.");
 
    cout << "\n\n   rep";
    cout << fold(
          7,
-         80,
+         ws.ws_col,
          "lacement - A string that will replace whatever matches match_regex. "
          "This string can contain the special variables #1, #2, #3, etc. These "
          "contain the backreferences.");
