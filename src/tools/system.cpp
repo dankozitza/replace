@@ -97,7 +97,7 @@ tools::Error tools::errorf(char const * format, ...) {
       switch( t ) {   // Type to expect.
          case 'i':
             Printable.i = va_arg( vl, long );
-            sprintf(buff, "%i", Printable.i);
+            sprintf(buff, "%li", Printable.i);
             msg += buff;
          break;
 
